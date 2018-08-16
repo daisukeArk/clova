@@ -1,0 +1,43 @@
+{
+  "name": "clova-extension-sample-audio-player",
+  "version": "1.0.0",
+  "description": "clova custom extension sample for audio player",
+  "main": "./dist/src",
+  "types": "./dist/src",
+  "scripts": {
+    "build": "rm -rf ./dist && $(npm bin)/tsc",
+    "lint": "$(npm bin)/tslint --project .",
+    "start": "node ./dist/src/index.js",
+    "test": "$(npm bin)/mocha --recursive $(find ./dist/test -name '*.test.js')"
+  },
+  "author": "Daisuke Araki",
+  "contributors": [],
+  "license": "MIT",
+  "dependencies": {
+    "@line/clova-cek-sdk-nodejs": "^1.0.1",
+    "aws-sdk": "^2.291.0",
+    "body-parser": "^1.18.2",
+    "config": "^1.30.0",
+    "express": "^4.16.3",
+    "log4js": "^2.5.2",
+    "underscore": "^1.9.1",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.8",
+    "@types/config": "0.0.34",
+    "@types/mocha": "^5.0.0",
+    "@types/node": "^9.6.2",
+    "@types/power-assert": "^1.4.29",
+    "@types/sinon": "^4.1.3",
+    "@types/underscore": "^1.8.8",
+    "@types/uuid": "^3.4.3",
+    "mocha": "^5.0.0",
+    "moq.ts": "^2.5.2",
+    "power-assert": "^1.4.4",
+    "sinon": "^4.2.2",
+    "tslint": "^5.9.1",
+    "tslint-microsoft-contrib": "^5.0.3",
+    "typescript": "^2.8.1"
+  }
+}
