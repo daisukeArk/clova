@@ -54,6 +54,44 @@ export const intentHandler = async (responseHelper: Clova.Context) => {
           }
         }
       ];
+      responseHelper.responseObject.response.shouldEndSession = false;
+      break;
+    case 'DelayPlayIntent':
+      responseHelper.setSimpleSpeech(
+        Clova.SpeechBuilder.createSpeechText('遅れてサンプルを再生します。')
+      );
+
+      // 型定義が無いのでanyで回避
+      responseHelper.responseObject.response.directives = <any>[
+        {
+          header: {
+            namespace: 'AudioPlayer',
+            name: 'Play',
+            dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
+            messageId: uuid.v4()
+          },
+          payload: {
+            audioItem: {
+              audioItemId: uuid.v4(),
+              stream: {
+                beginAtInMilliseconds: 0,
+                progressReport: {
+                  progressReportDelayInMilliseconds: null,
+                  progressReportIntervalInMilliseconds: null,
+                  progressReportPositionInMilliseconds: 60000
+                },
+                url: 'clova:TESTESTS', // process.env.AUDIO_URL,
+                urlPlayable: false
+              }
+            },
+            source: {
+              name: 'sample'
+            },
+            playBehavior: 'REPLACE_ALL'
+          }
+        }
+      ];
+      responseHelper.responseObject.response.shouldEndSession = true;
       break;
     default:
       responseHelper.setSimpleSpeech(
@@ -84,6 +122,67 @@ export const eventRequestHandler = async (responseHelper: Clova.Context) => {
             Clova.SpeechBuilder.createSpeechText('再生して、と言ってください。'),
             true
           );
+          break;
+        case 'StreamRequested':
+          // 型定義が無いのでanyで回避
+          // responseHelper.responseObject.response.directives = <any>[
+          //   {
+          //     header: {
+          //       namespace: 'AudioPlayer',
+          //       name: 'StreamDeliver'
+          //       // dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
+          //       // messageId: uuid.v4()
+          //     },
+          //     payload: {
+          //       audioItem: {
+          //         audioItemId: (<any>responseHelper.requestObject.request).event.payload.audioItemId,
+          //         stream: {
+          //           url: process.env.AUDIO_URL
+          //         }
+          //       }
+          //     }
+          //   }
+          // ];
+          responseHelper.setSimpleSpeech(
+            Clova.SpeechBuilder.createSpeechText('追加再生します。')
+          );
+          responseHelper.responseObject.response.directives = <any>[
+            // {
+            //   header: {
+            //     namespace: 'AudioPlayer',
+            //     name: 'StreamDeliver',
+            //     dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
+            //     messageId: uuid.v4()
+            //   },
+            //   payload: {
+            //     // audioItem: {
+            //       audioItemId: uuid.v4(),
+            //       stream: {
+            //         token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
+            //         url: process.env.AUDIO_URL
+            //       }
+            //     // }
+            //   }
+            // }
+            {
+              header: {
+                namespace: 'AudioPlayer',
+                name: 'StreamDeliver',
+                dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
+                messageId: uuid.v4()
+              },
+              payload: {
+                audioItem: {
+                  audioItemId: (<any>responseHelper.requestObject.request).event.payload.audioItemId,
+                  stream: {
+                    token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
+                    url: process.env.AUDIO_URL
+                  }
+                }
+              }
+            }
+          ];
+          responseHelper.responseObject.response.shouldEndSession = true;
           break;
         default:
           break;
