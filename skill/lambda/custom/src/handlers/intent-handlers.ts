@@ -33,24 +33,26 @@ export const intentHandler = async (responseHelper: Clova.Context) => {
       responseHelper.responseObject.response.directives = <any>[
         {
           header: {
-            namespace: 'AudioPlayer',
-            name: 'Play',
             dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
-            messageId: uuid.v4()
+            messageId: uuid.v4(),
+            name: 'Play',
+            namespace: 'AudioPlayer'
           },
           payload: {
             audioItem: {
               audioItemId: uuid.v4(),
               stream: {
                 beginAtInMilliseconds: 0,
+                token: 'audioToken',
                 url: process.env.AUDIO_URL,
                 urlPlayable: true
-              }
+              },
+              titleSubText1: 'subText1',
+              titleSubText2: 'subText2',
+              titleText: 'titleText'
             },
-            source: {
-              name: 'sample'
-            },
-            playBehavior: 'REPLACE_ALL'
+            playBehavior: 'REPLACE_ALL',
+            source: { name: 'audioPlayerTest' }
           }
         }
       ];
@@ -65,22 +67,17 @@ export const intentHandler = async (responseHelper: Clova.Context) => {
       responseHelper.responseObject.response.directives = <any>[
         {
           header: {
-            namespace: 'AudioPlayer',
-            name: 'Play',
             dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
-            messageId: uuid.v4()
+            messageId: uuid.v4(),
+            name: 'Play',
+            namespace: 'AudioPlayer'
           },
           payload: {
             audioItem: {
               audioItemId: uuid.v4(),
               stream: {
                 beginAtInMilliseconds: 0,
-                progressReport: {
-                  progressReportDelayInMilliseconds: null,
-                  progressReportIntervalInMilliseconds: null,
-                  progressReportPositionInMilliseconds: 60000
-                },
-                url: 'clova:TESTESTS', // process.env.AUDIO_URL,
+                url: 'clova:Test',
                 urlPlayable: false
               }
             },
@@ -97,9 +94,8 @@ export const intentHandler = async (responseHelper: Clova.Context) => {
       responseHelper.setSimpleSpeech(
         Clova.SpeechBuilder.createSpeechText('再生して、と言ってください。')
       );
-      responseHelper.setSimpleSpeech(
-        Clova.SpeechBuilder.createSpeechText('再生して、と言ってください。'),
-        true
+      responseHelper.setReprompt(
+        Clova.SpeechBuilder.createSpeechText('再生して、と言ってください。')
       );
       break;
   }
@@ -124,46 +120,12 @@ export const eventRequestHandler = async (responseHelper: Clova.Context) => {
           );
           break;
         case 'StreamRequested':
-          // 型定義が無いのでanyで回避
-          // responseHelper.responseObject.response.directives = <any>[
-          //   {
-          //     header: {
-          //       namespace: 'AudioPlayer',
-          //       name: 'StreamDeliver'
-          //       // dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
-          //       // messageId: uuid.v4()
-          //     },
-          //     payload: {
-          //       audioItem: {
-          //         audioItemId: (<any>responseHelper.requestObject.request).event.payload.audioItemId,
-          //         stream: {
-          //           url: process.env.AUDIO_URL
-          //         }
-          //       }
-          //     }
-          //   }
-          // ];
           responseHelper.setSimpleSpeech(
             Clova.SpeechBuilder.createSpeechText('追加再生します。')
           );
+          // tslint:disable-next-line:no-suspicious-comment
+          // TODO: 動かない ドキュメント通り
           responseHelper.responseObject.response.directives = <any>[
-            // {
-            //   header: {
-            //     namespace: 'AudioPlayer',
-            //     name: 'StreamDeliver',
-            //     dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
-            //     messageId: uuid.v4()
-            //   },
-            //   payload: {
-            //     // audioItem: {
-            //       audioItemId: uuid.v4(),
-            //       stream: {
-            //         token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
-            //         url: process.env.AUDIO_URL
-            //       }
-            //     // }
-            //   }
-            // }
             {
               header: {
                 namespace: 'AudioPlayer',
@@ -172,15 +134,33 @@ export const eventRequestHandler = async (responseHelper: Clova.Context) => {
                 messageId: uuid.v4()
               },
               payload: {
-                audioItem: {
-                  audioItemId: (<any>responseHelper.requestObject.request).event.payload.audioItemId,
-                  stream: {
-                    token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
-                    url: process.env.AUDIO_URL
-                  }
+                audioItemId: uuid.v4(),
+                stream: {
+                  token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
+                  url: process.env.AUDIO_URL
                 }
               }
             }
+
+            // tslint:disable-next-line:no-suspicious-comment
+            // TODO: 動かない audioItemの入れ子にしてみる
+            // {
+            //   header: {
+            //     dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
+            //     messageId: uuid.v4(),
+            //     name: 'StreamDeliver',
+            //     namespace: 'AudioPlayer'
+            //   },
+            //   payload: {
+            //     audioItem: {
+            //       audioItemId: (<any>responseHelper.requestObject.request).event.payload.audioItemId,
+            //       stream: {
+            //         token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
+            //         url: process.env.AUDIO_URL
+            //       }
+            //     }
+            //   }
+            // }
           ];
           responseHelper.responseObject.response.shouldEndSession = true;
           break;
