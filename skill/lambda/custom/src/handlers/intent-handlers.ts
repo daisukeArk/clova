@@ -123,8 +123,8 @@ export const eventRequestHandler = async (responseHelper: Clova.Context) => {
           responseHelper.setSimpleSpeech(
             Clova.SpeechBuilder.createSpeechText('追加再生します。')
           );
-          // tslint:disable-next-line:no-suspicious-comment
-          // TODO: 動かない ドキュメント通り
+
+          // StreamDeliverディレクティブ
           responseHelper.responseObject.response.directives = <any>[
             {
               header: {
@@ -135,33 +135,14 @@ export const eventRequestHandler = async (responseHelper: Clova.Context) => {
               },
               payload: {
                 audioItemId: uuid.v4(),
-                stream: {
-                  token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
-                  url: process.env.AUDIO_URL
-                }
+                audioStream: (<any>responseHelper.requestObject.request).event.payload.audioStream
               }
             }
-
-            // tslint:disable-next-line:no-suspicious-comment
-            // TODO: 動かない audioItemの入れ子にしてみる
-            // {
-            //   header: {
-            //     dialogRequestId: (<any>responseHelper.requestObject.request).requestId,
-            //     messageId: uuid.v4(),
-            //     name: 'StreamDeliver',
-            //     namespace: 'AudioPlayer'
-            //   },
-            //   payload: {
-            //     audioItem: {
-            //       audioItemId: (<any>responseHelper.requestObject.request).event.payload.audioItemId,
-            //       stream: {
-            //         token: (<any>responseHelper.requestObject.request).event.payload.audioStream.token,
-            //         url: process.env.AUDIO_URL
-            //       }
-            //     }
-            //   }
-            // }
           ];
+
+          (<any>responseHelper.responseObject.response.directives[0].payload).audioStream.url = process.env.AUDIO_URL;
+          (<any>responseHelper.responseObject.response.directives[0].payload).audioStream.urlPlayable = true;
+
           responseHelper.responseObject.response.shouldEndSession = true;
           break;
         default:
